@@ -14,6 +14,18 @@ void view() {
     }
 }
 
+struct A {
+    void t();
+    struct B {
+        void t();
+    };
+
+};
+
+void A::B::t() {
+        
+}
+
 void build() {
 
 }
