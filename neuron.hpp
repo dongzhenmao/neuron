@@ -44,7 +44,7 @@ struct neuron {
         void get_release();
 
         void get_bap() {
-            Ca_v += 3.2 * h + 0.25;
+            Ca_v += 5 * h + 0.25;
         }
 
         void t_run();
@@ -53,7 +53,7 @@ struct neuron {
 
     struct axon {
         neuron *from;
-        std::vector<dendrite*> to; 
+        std::list<dendrite*> to; // 防止地址变动
         void release();
     };    
 
@@ -71,14 +71,34 @@ struct neuron {
     void release();
 
     void t_run();
+
+    dendrite *build_a_den(int pre_type) {
+        if (pre_type == 0) {
+            den.push_back(neuron::dendrite(0, 1));
+        } else {
+            den.push_back(neuron::dendrite(-1, 0));
+        }
+        den.back().from = this;
+        return &den.back();
+    }
     
 };
 
-template<typename neuron>
+void neuron::dendrite::t_run() { // 随时间 min_dt 的自然损失
+    Ca_v = std::max(Ca_rest, Ca_v + 0.003 * (Ca_rest - Ca_v) - 0.003); // 前面是流出, 后面是离子泵
+    h *= 0.994;
+    w += min_dt * Ca_f(Ca_v);
+    if (link->from->type() == 0) { // 突触前神经元是兴奋性
+        w = std::max(std::min(w, 1.0), 0.0);
+    } else { // 突触前神经元是抑制性
+        w = std::max(std::min(w, 0.0), -1.0);
+    }
+}
+
 void link_random(neuron *pre, neuron *post) {
-    if (pre->type() == 0) post->den.push_back(dendrite<neuron>(0, 1));
-    else post->den.push_back(dendrite<neuron>(-1, 0));
-    pre->ax.to.push_back(&post->den.back());
+    neuron::dendrite *den = post->build_a_den(pre->type());
+    pre->ax.to.push_back(den);
+    den->link = &pre->ax;
 }
 
 void neuron::dendrite::get_release() {
@@ -122,6 +142,6 @@ struct up_neuron : neuron {
     double b() override { return 0.2; }
     double c() override { return -67.0; }
     double d() override { return 8.0; }
-    int type() override { return 1; }    
+    int type() override { return 1; }
 };
 
