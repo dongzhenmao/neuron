@@ -25,7 +25,7 @@ struct dendrite {
     void get_release();
 
     void get_bap() {
-        Ca_v += 4 * h + 0.2;
+        Ca_v += 3.5 * h + 0.2;
     }
 
     void t_run() { // 随时间 min_dt 的自然损失
