@@ -18,6 +18,8 @@ struct dendrite {
     static constexpr double Ca_rest = 0.05;
 
     neuron *from;
+    axon *link;
+
     double w; 
     double Ca_v;
     double h; // 已激活的 NMDA 受体占比
@@ -32,7 +34,11 @@ struct dendrite {
         Ca_v = std::max(Ca_rest, Ca_v + 0.003 * (Ca_rest - Ca_v) - 0.003); // 前面是流出, 后面是离子泵
         h *= 0.994;
         w += min_dt * Ca_f(Ca_v);
-        w = std::max(std::min(w, 1.0), -1.0);
+        if (link->from->type == 0) { // 突触前神经元是兴奋性
+            w = std::max(std::min(w, 1.0), 0.0);
+        } else { // 突触前神经元是抑制性
+            w = std::max(std::min(w, 0.0), -1.0);
+        }
     }
 
 };
@@ -59,6 +65,14 @@ struct neuron {
     void release();
 
     void t_run();
+
+    neuron(int _type) : type(_type) {
+        if (type == 0) { // 兴奋
+
+        } else { // 抑制
+
+        }
+    }
     
 } _neuron[max_n];
 
@@ -99,8 +113,12 @@ void view() {
     }
 }
 
+void build() {
+
+}
+
 void solve() {
-    
+
 }
 
 int main() {
