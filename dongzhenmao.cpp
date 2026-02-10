@@ -89,7 +89,7 @@ void neuron::t_run() {
     I *= 0.1;
 }
 
-void solve() {
+void view() {
     constexpr double Ca_rest = 0.05;
     double Ca_v = 2;
     printf("Time,Ca_v\n");
@@ -97,6 +97,10 @@ void solve() {
         Ca_v = std::max(Ca_rest, Ca_v + 0.004 * (Ca_rest - Ca_v) - 0.002);
         printf("%lf,%lf\n", 0.1 * i, Ca_f(Ca_v));
     }
+}
+
+void solve() {
+    
 }
 
 int main() {
