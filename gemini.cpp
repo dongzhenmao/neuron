@@ -37,3 +37,11 @@ int main() {
 
     return 0;
 }
+
+/*
+powershell
+g++ test.cpp -o test.exe
+.\test.exe > data.csv
+
+
+*/

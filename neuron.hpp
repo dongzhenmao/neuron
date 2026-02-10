@@ -44,7 +44,7 @@ struct neuron {
         void get_release();
 
         void get_bap() {
-            Ca_v += 5 * h + 0.25;
+            Ca_v += 4.5 * h + 0.3;
         }
 
         void t_run();
@@ -81,6 +81,8 @@ struct neuron {
         den.back().from = this;
         return &den.back();
     }
+
+    neuron() { ax.from = this; }
     
 };
 
