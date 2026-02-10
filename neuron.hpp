@@ -139,7 +139,7 @@ struct PN_neuron : neuron {
     int type() override { return 0; }
 };
 
-struct up_neuron : neuron {
+struct SST_neuron : neuron {
     double a() override { return 0.02; }
     double b() override { return 0.2; }
     double c() override { return -67.0; }
