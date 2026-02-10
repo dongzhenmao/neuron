@@ -15,24 +15,21 @@ struct axon;
 struct dendrite;
 
 struct dendrite {
-    static const double Ca_rest = 0.05;
+    static constexpr double Ca_rest = 0.05;
 
     neuron *from;
     double w; 
     double Ca_v;
     double h; // 已激活的 NMDA 受体占比
 
-    void get_release() {
-        from->I += w;
-        h += (1 - h) * 0.5;
-    }
+    void get_release();
 
     void get_bap() {
-        Ca_v += 3 * h + 0.2;
+        Ca_v += 4 * h + 0.2;
     }
 
     void t_run() { // 随时间 min_dt 的自然损失
-        Ca_v = std::max(Ca_rest, Ca_v + 0.004 * (Ca_rest - Ca_v) - 0.002); // 前面是流出, 后面是离子泵
+        Ca_v = std::max(Ca_rest, Ca_v + 0.003 * (Ca_rest - Ca_v) - 0.003); // 前面是流出, 后面是离子泵
         h *= 0.994;
         w += min_dt * Ca_f(Ca_v);
         w = std::max(std::min(w, 1.0), -1.0);
@@ -47,10 +44,10 @@ struct axon {
 };
 
 struct neuron {
-    static const double a = 0.02;
-    static const double b = 0.2;
-    static const double c = -67.0; // rest
-    static const double d = 8.0;
+    static constexpr double a = 0.02;
+    static constexpr double b = 0.2;
+    static constexpr double c = -67.0; // rest
+    static constexpr double d = 8.0;
 
     int type; // 
 
@@ -64,6 +61,11 @@ struct neuron {
     void t_run();
     
 } _neuron[max_n];
+
+void dendrite::get_release() {
+    from->I += w;
+    h += (1 - h) * 0.5;
+}
 
 void axon::release() {
     for (dendrite *den : to) {
@@ -87,12 +89,14 @@ void neuron::t_run() {
     I *= 0.1;
 }
 
-void build() {
-    
-}
-
 void solve() {
-
+    constexpr double Ca_rest = 0.05;
+    double Ca_v = 2;
+    printf("Time,Ca_v\n");
+    for (int i = 0; i < 1000; ++i) {
+        Ca_v = std::max(Ca_rest, Ca_v + 0.004 * (Ca_rest - Ca_v) - 0.002);
+        printf("%lf,%lf\n", 0.1 * i, Ca_f(Ca_v));
+    }
 }
 
 int main() {
