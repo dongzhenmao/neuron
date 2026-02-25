@@ -4,26 +4,18 @@
 
 #include "neuron.hpp"
 
-void view() {
-    constexpr double Ca_rest = 0.05;
-    double Ca_v = 2.2;
-    printf("Time,Ca_v\n");
-    for (int i = 0; i < 500; ++i) {
-        Ca_v = std::max(Ca_rest, Ca_v + 0.003 * (Ca_rest - Ca_v) - 0.003);
-        printf("%lf,%lf\n", 0.1 * i, Ca_f(Ca_v));
-    }
-}
-
-void build() {
-
-}
-
-void solve() {
-
+void view_DA() {
+    DA.burst();
+    for (int i = 0; i < 2000; ++i) { // 200 ms
+        if (i % 10 == 0) {
+            printf("%f %.6f\n", i / 10.0, DA.v());
+        }
+        DA.t_run();
+    }    
 }
 
 int main() {
-    // view();
+    view_DA();
     
     return 0;
 }

@@ -6,21 +6,9 @@
 #include <list>
 #include <random>
 
-#include "my_algorithm"
-
-const double min_dt = 0.1; // 时间步 0.1 ms
-
-std::mt19937 _gen(713);
-
-double rand_double(double l, double r) {
-    return std::uniform_real_distribution<double>(l, r)(_gen);
-}
-
-double Ca_f(double x) { // min = -0.087, max -> 0.05
-    return x < 0.2 ? 0 : 0.04 * (x - 0.2) * (x - 0.8) / (x * x + 0.3);
-} 
-
-const int max_n = 1e2;
+#include "my_algorithm.hpp"
+#include "overall/DA.hpp"
+#include "overall/const_v.hpp"
 
 struct neuron;
 
@@ -30,8 +18,9 @@ struct neuron {
     struct axon;
 
     struct dendrite {
+        static double Ca_f(double x);
 
-        static constexpr double Ca_rest = 0.05;
+        double Ca_rest() { return 0.05; };
 
         neuron *from;
         axon *link;
@@ -57,8 +46,8 @@ struct neuron {
 
     virtual double a() = 0;
     virtual double b() = 0;
-    virtual double c() = 0; // 
-    virtual double d() = 0;
+    virtual double c() = 0; // 复极化电位
+    virtual double d() = 0; //
     virtual int type() = 0;
 
     std::list<dendrite> den;
@@ -75,8 +64,12 @@ struct neuron {
     
 };
 
+double neuron::dendrite::Ca_f(double x) {
+    return x < 0.2 ? 0 : 0.04 * (x - 0.2) * (x - 0.8) / (x * x + 0.3);
+}
+
 neuron::dendrite::dendrite(double l, double r) { 
-    h = 0, Ca_v = Ca_rest;
+    h = 0, Ca_v = Ca_rest();
     w = rand_double(l, r);
 }
 
@@ -86,19 +79,21 @@ void neuron::dendrite::get_bap() {
 
 neuron::dendrite *neuron::build_a_den(int pre_type) {
     if (pre_type == 0) {
-        den.push_back(neuron::dendrite(0, 1));
+        den.push_back(neuron::dendrite(0.2, 0.8));
     } else {
-        den.push_back(neuron::dendrite(-1, 0));
+        den.push_back(neuron::dendrite(-0.8, 0.2));
     }
     den.back().from = this;
     return &den.back();
 }
 
 void neuron::dendrite::t_run() {              // 随时间 min_dt 的自然损失
-    Ca_v = std::max(Ca_rest, Ca_v + 0.003 * (Ca_rest - Ca_v) - 0.003); // 前面是树突棘颈流出, 后面是离子泵
+    Ca_v = std::max(Ca_rest(), Ca_v + 0.003 * (Ca_rest() - Ca_v) - 0.003); // 前面是树突棘颈流出, 后面是离子泵
+
     h *= 0.994;
-    w += min_dt * Ca_f(Ca_v);
-    if (link->from->type() == 0) {            // 突触前神经元是兴奋性
+    w += min_dt * neuron::dendrite::Ca_f(Ca_v) * DA.f();
+
+    if (link->from->type() == 1) {            // 突触前神经元是兴奋性
         w = std::max(std::min(w, 1.0), 0.0);
     } else {                                  // 突触前神经元是抑制性
         w = std::max(std::min(w, 0.0), -1.0);
@@ -136,6 +131,7 @@ void neuron::t_run() {
     v += min_dt * (0.04 * v * v + 5 * v + 140 - u + I);
     u += min_dt * a() * (b() * _v - u);
     I *= 0.1;
+    if (v > 30.0) release();
 }
 
 
@@ -144,7 +140,7 @@ struct PN_neuron : neuron {
     double b() override { return 0.2; }
     double c() override { return -67.0; }
     double d() override { return 8.0; }
-    int type() override { return 0; }
+    int type() override { return 1; }
 };
 
 struct SST_neuron : neuron {
@@ -152,6 +148,6 @@ struct SST_neuron : neuron {
     double b() override { return 0.2; }
     double c() override { return -67.0; }
     double d() override { return 8.0; }
-    int type() override { return 1; }
+    int type() override { return -1; }
 };
 
