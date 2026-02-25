@@ -7,8 +7,7 @@
 #include <random>
 
 #include "my_algorithm.hpp"
-#include "overall/DA.hpp"
-#include "overall/const_v.hpp"
+#include "overall/overall.hpp"
 
 struct neuron;
 
@@ -76,7 +75,7 @@ struct neuron {
     
 };
 
-double neuron::dendrite::Ca_f(double x) {
+double neuron::dendrite::Ca_f(double x) { // 1 ms 为单位
     return x < 0.1 ? 0 : 0.006 * (x - 0.1) * (x - 0.8) / (x * x + 0.3);
 }
 
@@ -96,10 +95,10 @@ void neuron::dendrite::get_bap() {
 
 void neuron::dendrite::t_run() {              // 随时间 min_dt 的自然损失
     // Ca_v = std::max(Ca_rest(), Ca_v + 0.003 * (Ca_rest() - Ca_v) - 0.003); // 前面是树突棘颈流出, 后面是离子泵
-    Ca_v() = Ca_v() + 0.004 * (Ca_rest() - Ca_v()); // 树突棘颈流出
+    Ca_v() = Ca_v() + 0.04 * min_dt * (Ca_rest() - Ca_v()); // 树突棘颈流出
 
-    h() *= 0.994;
-    w() += min_dt * neuron::dendrite::Ca_f(Ca_v()) * DA.f();
+    h() *= 9.94 * min_dt;
+    w() += (min_dt * neuron::dendrite::Ca_f(Ca_v())) * (min_dt * DA.f());
 
     if (link->from->type() == 1) {            // 突触前神经元是兴奋性
         w() = std::max(std::min(w(), 2.0), 0.0);
@@ -146,7 +145,7 @@ void neuron::t_run() {
     double _v = v();
     v() += min_dt * (0.04 * v() * v() + 5 * v() + 140 - u() + I());
     u() += min_dt * a() * (b() * _v - u());
-    I() *= 0.1;
+    I() *= 1.1 * min_dt;
 
     if (v() > 30.0) release();
 }

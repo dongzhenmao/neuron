@@ -28,31 +28,13 @@ void view_enhance() {
 
     printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
 
-    a.release();
-    b.t_run();
-    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
+    for (int i = 0; i < 6; ++i) {
+        c.release();
+        b.t_run();
+        printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
+    }
 
-    a.release();
-    b.t_run();
-    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
-
-    a.release();
-    b.t_run();
-    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
-
-    a.release();
-    b.t_run();
-    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
-
-    a.release();
-    b.t_run();
-    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
-
-    a.release();
-    b.t_run();
-    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
-
-    DA.float_v(-0.5);
+    DA.float_v(0.5);
     for (int i = 1; i < 10000; ++i) {
         DA.t_run();
         b.t_run();
