@@ -1,0 +1,9 @@
+#pragma once
+
+#include <random>
+
+std::mt19937 _gen(713);
+
+double rand_double(double l, double r) {
+    return std::uniform_real_distribution<double>(l, r)(_gen);
+}

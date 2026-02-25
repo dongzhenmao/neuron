@@ -10,7 +10,7 @@ int main() {
     double v = -67.0;  
     double u = b * v;  
 
-    double T = 500.0;     // 总时间 500 ms
+    double T = 350.0;     // 总时间 500 ms
     double dt = 0.1;       // 步长 0.1 ms
     int steps = (int)(T / dt);
 
@@ -18,7 +18,7 @@ int main() {
 
     for (int i = 0; i < steps; ++i) {
         double t = i * dt;
-        double I = (t >= 50.0) ? 50.0 : 0.0; // 过一会再给电流
+        double I = (t >= 50.0 && t <= 200) ? 10.0 : 0.0; // 过一会再给电流
 
         double v_prev = v;
         v = v + dt * (0.04 * v * v + 5 * v + 140 - u + I);
@@ -40,8 +40,8 @@ int main() {
 
 /*
 powershell
-g++ test.cpp -o test.exe
-.\test.exe > data.csv
+g++ gemini.cpp -o gemini.exe
+.\gemini.exe > data.csv
 
 
 */

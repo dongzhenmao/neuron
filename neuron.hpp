@@ -1,9 +1,12 @@
+#pragma once
+
 #include <stdio.h>
 #include <vector> 
 #include <math.h>
 #include <list>
 #include <random>
 
+#include "my_algorithm"
 
 const double min_dt = 0.1; // 时间步 0.1 ms
 
@@ -23,9 +26,11 @@ struct neuron;
 
 struct neuron {
 
+    struct dendrite;
     struct axon;
 
     struct dendrite {
+
         static constexpr double Ca_rest = 0.05;
 
         neuron *from;
@@ -36,17 +41,10 @@ struct neuron {
         double h; // 已激活的 NMDA 受体占比
 
         dendrite() = default;
-        dendrite(double l, double r) { 
-            h = 0, Ca_v = Ca_rest;
-            w = rand_double(l, r);
-        }
+        dendrite(double l, double r);
 
         void get_release();
-
-        void get_bap() {
-            Ca_v += 4.5 * h + 0.3;
-        }
-
+        void get_bap();
         void t_run();
 
     };
@@ -59,7 +57,7 @@ struct neuron {
 
     virtual double a() = 0;
     virtual double b() = 0;
-    virtual double c() = 0;
+    virtual double c() = 0; // 
     virtual double d() = 0;
     virtual int type() = 0;
 
@@ -69,30 +67,40 @@ struct neuron {
     double v, u, I;
 
     void release();
-
     void t_run();
 
-    dendrite *build_a_den(int pre_type) {
-        if (pre_type == 0) {
-            den.push_back(neuron::dendrite(0, 1));
-        } else {
-            den.push_back(neuron::dendrite(-1, 0));
-        }
-        den.back().from = this;
-        return &den.back();
-    }
+    dendrite *build_a_den(int pre_type);
 
     neuron() { ax.from = this; }
     
 };
 
-void neuron::dendrite::t_run() { // 随时间 min_dt 的自然损失
-    Ca_v = std::max(Ca_rest, Ca_v + 0.003 * (Ca_rest - Ca_v) - 0.003); // 前面是流出, 后面是离子泵
+neuron::dendrite::dendrite(double l, double r) { 
+    h = 0, Ca_v = Ca_rest;
+    w = rand_double(l, r);
+}
+
+void neuron::dendrite::get_bap() {
+    Ca_v += 4.5 * h + 0.3;
+}
+
+neuron::dendrite *neuron::build_a_den(int pre_type) {
+    if (pre_type == 0) {
+        den.push_back(neuron::dendrite(0, 1));
+    } else {
+        den.push_back(neuron::dendrite(-1, 0));
+    }
+    den.back().from = this;
+    return &den.back();
+}
+
+void neuron::dendrite::t_run() {              // 随时间 min_dt 的自然损失
+    Ca_v = std::max(Ca_rest, Ca_v + 0.003 * (Ca_rest - Ca_v) - 0.003); // 前面是树突棘颈流出, 后面是离子泵
     h *= 0.994;
     w += min_dt * Ca_f(Ca_v);
-    if (link->from->type() == 0) { // 突触前神经元是兴奋性
+    if (link->from->type() == 0) {            // 突触前神经元是兴奋性
         w = std::max(std::min(w, 1.0), 0.0);
-    } else { // 突触前神经元是抑制性
+    } else {                                  // 突触前神经元是抑制性
         w = std::max(std::min(w, 0.0), -1.0);
     }
 }
