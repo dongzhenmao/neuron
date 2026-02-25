@@ -6,7 +6,7 @@
 
 void view_DA_v() {
     printf("Time,DA_v\n");
-    DA.burst();
+    DA.float_v(1);
     for (int i = 0; i < 2000; ++i) { // 200 ms
         if (i % 10 == 0) {
             printf("%f,%.6f\n", i / 10.0, DA.v());
@@ -52,7 +52,7 @@ void view_enhance() {
     b.t_run();
     printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
 
-    DA.burst();
+    DA.float_v(-0.5);
     for (int i = 1; i < 10000; ++i) {
         DA.t_run();
         b.t_run();

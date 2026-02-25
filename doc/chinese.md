@@ -171,7 +171,7 @@ g++ test.cpp -o test.exe
 
 一些钙浓度参考数值参考：
 - 静息：$0.05 \, \text{umol}$。
-- 引发 LTD：$0.2 \, \text{umol}$。
+- 引发 LTD：$0.1 \, \text{umol}$。
 - 引发 LTP：$0.8 \, \text{umol}$。
 - 单次发放进入：$0.2 \, \text{umol}$。
 - 因果进入（见下文树突结构），令 $h$ 为 NMDA 开放率：$ 2 \cdot e^{-0.1\Delta t}\cdot h \, \text{umol}$。
