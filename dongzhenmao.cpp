@@ -19,12 +19,46 @@ void view_Ca_v() {
 
 }
 
-PN_neuron a, b;
+PN_neuron a, b, c;
 
 void view_enhance() {
     printf("Time,W\n");
     link_random(&a, &b);
-    printf("%lf\n", b.den.front().w());
+    link_random(&c, &b);
+
+    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
+
+    a.release();
+    b.t_run();
+    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
+
+    a.release();
+    b.t_run();
+    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
+
+    a.release();
+    b.t_run();
+    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
+
+    a.release();
+    b.t_run();
+    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
+
+    a.release();
+    b.t_run();
+    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
+
+    a.release();
+    b.t_run();
+    printf("%lf,%lf,%lf,%lf\n", 0, b.v(), b.den.front().Ca_v(), b.den.front().w());
+
+    DA.burst();
+    for (int i = 1; i < 10000; ++i) {
+        DA.t_run();
+        b.t_run();
+        if(i % 10 == 0) printf("%lf,%lf,%lf,%lf\n", i / 10.0, b.v(), b.den.front().Ca_v(), b.den.front().w());
+    }
+
 }
 
 int main() {
