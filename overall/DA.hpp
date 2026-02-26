@@ -1,16 +1,16 @@
 #pragma once
 
-#include "time.hpp"
+#include "const_v.hpp"
 
 struct __DA { // umol
-    double __v;
+    double __v, I;
 
     double rest() { return 0.05; }
 
     __DA() : __v(rest()) {}
 
     void float_v(double k) { 
-        __v = std::max(0.0, std::min(0.2, __v + 0.05 * k));
+        I += 0.045 * k;
     }
 
     double v() { return __v; } // 获取实时多巴胺浓度
@@ -26,7 +26,14 @@ struct __DA { // umol
     }
 
     void t_run() { // 时间步 1 ms
-        __v = __v + (rest() - v()) * 0.011 * min_dt;
+        __v = __v + (rest() - v()) * (0.00011 / min_dt); 
+        __v = std::max(0.0, std::min(0.2, __v + I));
+        I *= (0.01 / min_dt);
+    }
+
+    __DA() {
+        __v = rest();
+        I = 0;
     }
 
 } DA;
