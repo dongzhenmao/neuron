@@ -15,10 +15,6 @@ void view_DA_v() {
     }    
 }
 
-void view_Ca_v() {
-
-}
-
 PN_Neuron a, b, c;
 
 void view_enhance() {

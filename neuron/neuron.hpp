@@ -167,5 +167,3 @@ struct SST_Neuron : Neuron {
         I = 0;
     }
 };
-
-std::list<Neuron> neu;
