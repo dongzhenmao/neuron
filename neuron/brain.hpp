@@ -44,7 +44,9 @@ void Brain::build() { // 累了, 皮层等会再实现
     }
 
     for (Neuron *pre : input_ly) {
-        for (Neuron *post : )
+        for (Neuron *post : hide_ly) {
+            link_random(pre, post);
+        }
     }
 
 
